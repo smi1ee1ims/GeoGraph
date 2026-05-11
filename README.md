@@ -42,49 +42,64 @@
 - LLMapi:deepseek-chat-v3.2;qwen-max
 
 ### 【4】项目结构
-
+仅列出常用文件，其他的一般用不到
 ```
-backend/
+script/     #本地开发版本
+├── graphRAG.ipynb #试题生成
+├── eval.ipynb  #评估器1~3
+├── script\eval_structural_similarity.ipynb  #评估器4
+├── question_optimizer_agent.py  #试题优化agent（接试题生成之后）
+backend/    #前后端服务版本
 ├── main.py              # FastAPI 入口
 ├── rag_service.py      # 核心 RAG 服务
 ├── build_vectorstore.py # 向量库构建脚本
 ├── index.html          # 前端页面
 ├── requirements.txt    # 依赖列表
-├── .env.example        # 环境变量模板
+├── .env       # 环境变量
 └── data/
     ├── cleaned_湘教版地理必修一Chap2.md  # 教材文本
     └── vectorstore/    # FAISS 向量库
 ```
-### 【5】快速部署
 
+### 【5】快速部署指南
+script和backend分别是本地开发版本、网页服务版本，两个中任一个都能实现功能。两者下各有一个.env，需要各自配置。  
+data文件夹为必选项。  
+
+以backend版本为例：
+1. 安装依赖
 ```bash
-# 1. 安装依赖
 pip install -r requirements.txt
-
-# 2. 配置环境变量 (.env)
-NEO4J_URL=bolt://localhost:7689
-NEO4J_USER=neo4j
-NEO4J_PASSWORD=your_password
-
-# 3. 构建向量库（首次运行）
+```
+2. 配置环境变量 (.env)
+也可以换用其他大模型，但可能需要修改代码里其他地方的调用。  
+不论使用script
+```bash
+DEEPSEEK_API_KEY=你的key
+QWEN_KEY=你的key
+```
+3. 构建向量库（首次运行）
+```bash
 python build_vectorstore.py
-
+```
 # 4. 启动服务
+```bash
 python main.py
 ```
-
 访问 `http://localhost` 即可使用前端页面。
+也可以访问http://47.111.172.69/，这是已部署服务器的功能网页入口。
+
 
 ### 【6】核心脚本使用（不依赖前端）
 
 #### graphRAG.ipynb - 试题生成
-Jupyter notebook，直接运行单元格即可生成试题，支持三种模式：
+直接运行单元格即可生成试题，支持三种模式：
 - **图检索**：基于 Neo4j 知识图谱
 - **向量检索**：基于 FAISS 向量库
 - **无检索**：直接由 LLM 生成
+同时还包含个性化特征融合模块、试题特征字典等重要内容
 
 #### eval.ipynb - 评估器 1-3
-三个评估指标：
+包含三个评估指标，可运行相应的单元格，支持单次和批量评估
 - 难度评估
 - 认知层级评估
 - 知识点覆盖评估

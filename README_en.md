@@ -44,49 +44,65 @@ Currently supports Chapter 2 for testing. More chapters coming soon.
 
 ### 【4】Project Structure
 
+Only common files are listed. Others are generally not needed.
+
 ```
-backend/
+script/     # Local development version
+├── graphRAG.ipynb # Question generation
+├── eval.ipynb  # Evaluators 1-3
+├── eval_structural_similarity.ipynb  # Evaluator 4
+├── question_optimizer_agent.py  # Question optimizer agent
+backend/    # Web service version
 ├── main.py              # FastAPI entry point
 ├── rag_service.py      # Core RAG service
 ├── build_vectorstore.py # Vector store builder
 ├── index.html          # Frontend page
 ├── requirements.txt    # Dependencies
-├── .env.example        # Environment variable template
+├── .env                # Environment variables
 └── data/
     ├── cleaned_湘教版地理必修一Chap2.md  # Textbook content
     └── vectorstore/    # FAISS vector store
 ```
 
-### 【5】Quick Start
+### 【5】Quick Start Guide
 
+`sript/` and `backend/` are the local development version and web service version respectively. Either can implement full functionality. Each has its own `.env` that needs separate configuration.
+The `data/` folder is required.
+
+Using backend version as example:
+1. Install dependencies
 ```bash
-# 1. Install dependencies
 pip install -r requirements.txt
-
-# 2. Configure environment variables (.env)
-NEO4J_URL=bolt://localhost:7689
-NEO4J_USER=neo4j
-NEO4J_PASSWORD=your_password
-
-# 3. Build vector store (first run only)
+```
+2. Configure environment variables (.env)
+You can also use other LLMs, but may need to modify code elsewhere.
+For script version:
+```bash
+DEEPSEEK_API_KEY=your_key
+QWEN_KEY=your_key
+```
+3. Build vector store (first run only)
+```bash
 python build_vectorstore.py
-
-# 4. Start the service
+```
+4. Start the service
+```bash
 python main.py
 ```
-
 Access `http://localhost` to use the frontend.
+Or visit http://47.111.172.69/ for the deployed server version.
 
 ### 【6】Core Scripts (without frontend)
 
 #### graphRAG.ipynb - Question Generation
-Open in Jupyter notebook and run cells directly. Supports three modes:
+Run cells directly to generate questions, supports three modes:
 - **Graph Retrieval**: Uses Neo4j knowledge graph
 - **Vector Retrieval**: Uses FAISS vector store
 - **No Retrieval**: Direct LLM generation
+Also includes personalized feature fusion module and question feature dictionary.
 
 #### eval.ipynb - Evaluators 1-3
-Three evaluation metrics:
+Three evaluation metrics, run corresponding cells, supports single and batch evaluation:
 - Difficulty evaluation
 - Cognitive level evaluation
 - Knowledge point coverage evaluation
