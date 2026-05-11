@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m py_compile question_optimizer_agent.py)",
+      "Bash(python test_optimizer.py)",
+      "Bash(conda activate *)",
+      "Bash(python -c ' *)"
+    ]
+  }
+}

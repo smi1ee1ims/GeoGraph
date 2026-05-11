@@ -1,0 +1,485 @@
+﻿[
+  {
+    "node_id": 0,
+    "label": "概念",
+    "props": {
+      "id": "地貌"
+    }
+  },
+  {
+    "node_id": 1,
+    "label": "概念",
+    "props": {
+      "id": "流水地貌"
+    }
+  },
+  {
+    "node_id": 2,
+    "label": "概念",
+    "props": {
+      "id": "流水侵蚀地貌"
+    }
+  },
+  {
+    "node_id": 3,
+    "label": "概念",
+    "props": {
+      "id": "流水堆积地貌"
+    }
+  },
+  {
+    "node_id": 4,
+    "label": "地貌类型",
+    "props": {
+      "id": "峡谷"
+    }
+  },
+  {
+    "node_id": 5,
+    "label": "地貌类型",
+    "props": {
+      "id": "河漫滩"
+    }
+  },
+  {
+    "node_id": 6,
+    "label": "地貌类型",
+    "props": {
+      "id": "河流阶地"
+    }
+  },
+  {
+    "node_id": 7,
+    "label": "地貌类型",
+    "props": {
+      "id": "曲流"
+    }
+  },
+  {
+    "node_id": 8,
+    "label": "地貌类型",
+    "props": {
+      "id": "牛轭湖"
+    }
+  },
+  {
+    "node_id": 9,
+    "label": "地貌类型",
+    "props": {
+      "id": "冲积扇"
+    }
+  },
+  {
+    "node_id": 10,
+    "label": "地貌类型",
+    "props": {
+      "id": "洪积扇"
+    }
+  },
+  {
+    "node_id": 11,
+    "label": "地貌类型",
+    "props": {
+      "id": "冲积平原"
+    }
+  },
+  {
+    "node_id": 12,
+    "label": "地貌类型",
+    "props": {
+      "id": "三角洲"
+    }
+  },
+  {
+    "node_id": 13,
+    "label": "地貌类型",
+    "props": {
+      "id": "江心洲"
+    }
+  },
+  {
+    "node_id": 14,
+    "label": "自然灾害",
+    "props": {
+      "id": "滑坡"
+    }
+  },
+  {
+    "node_id": 15,
+    "label": "自然灾害",
+    "props": {
+      "id": "泥石流"
+    }
+  },
+  {
+    "node_id": 16,
+    "label": "概念",
+    "props": {
+      "id": "风蚀地貌"
+    }
+  },
+  {
+    "node_id": 17,
+    "label": "概念",
+    "props": {
+      "id": "风积地貌"
+    }
+  },
+  {
+    "node_id": 18,
+    "label": "地貌类型",
+    "props": {
+      "id": "风蚀蘑菇"
+    }
+  },
+  {
+    "node_id": 19,
+    "label": "地貌类型",
+    "props": {
+      "id": "风蚀壁龛"
+    }
+  },
+  {
+    "node_id": 20,
+    "label": "地貌类型",
+    "props": {
+      "id": "风蚀柱"
+    }
+  },
+  {
+    "node_id": 21,
+    "label": "地貌类型",
+    "props": {
+      "id": "雅丹地貌"
+    }
+  },
+  {
+    "node_id": 22,
+    "label": "地貌类型",
+    "props": {
+      "id": "沙丘"
+    }
+  },
+  {
+    "node_id": 23,
+    "label": "地貌类型",
+    "props": {
+      "id": "新月形沙丘"
+    }
+  },
+  {
+    "node_id": 24,
+    "label": "地貌类型",
+    "props": {
+      "id": "灌丛沙丘"
+    }
+  },
+  {
+    "node_id": 25,
+    "label": "概念",
+    "props": {
+      "id": "喀斯特地貌"
+    }
+  },
+  {
+    "node_id": 26,
+    "label": "概念",
+    "props": {
+      "id": "海岸地貌"
+    }
+  },
+  {
+    "node_id": 27,
+    "label": "概念",
+    "props": {
+      "id": "冰川地貌"
+    }
+  },
+  {
+    "node_id": 28,
+    "label": "概念",
+    "props": {
+      "id": "海蚀地貌"
+    }
+  },
+  {
+    "node_id": 29,
+    "label": "概念",
+    "props": {
+      "id": "海积地貌"
+    }
+  },
+  {
+    "node_id": 30,
+    "label": "地貌类型",
+    "props": {
+      "id": "海蚀崖"
+    }
+  },
+  {
+    "node_id": 31,
+    "label": "地貌类型",
+    "props": {
+      "id": "海蚀平台"
+    }
+  },
+  {
+    "node_id": 32,
+    "label": "地貌类型",
+    "props": {
+      "id": "海蚀柱"
+    }
+  },
+  {
+    "node_id": 33,
+    "label": "地貌类型",
+    "props": {
+      "id": "海滩"
+    }
+  },
+  {
+    "node_id": 34,
+    "label": "地貌类型",
+    "props": {
+      "id": "岬角"
+    }
+  },
+  {
+    "node_id": 35,
+    "label": "地貌类型",
+    "props": {
+      "id": "冰斗"
+    }
+  },
+  {
+    "node_id": 36,
+    "label": "地貌类型",
+    "props": {
+      "id": "冰川槽谷"
+    }
+  },
+  {
+    "node_id": 37,
+    "label": "地貌类型",
+    "props": {
+      "id": "角峰"
+    }
+  },
+  {
+    "node_id": 38,
+    "label": "地貌类型",
+    "props": {
+      "id": "刃脊"
+    }
+  },
+  {
+    "node_id": 39,
+    "label": "地貌类型",
+    "props": {
+      "id": "峡湾"
+    }
+  },
+  {
+    "node_id": 40,
+    "label": "河流",
+    "props": {
+      "id": "嘉陵江"
+    }
+  },
+  {
+    "node_id": 41,
+    "label": "地点",
+    "props": {
+      "id": "青居镇"
+    }
+  },
+  {
+    "node_id": 42,
+    "label": "地点",
+    "props": {
+      "id": "虎跳峡"
+    }
+  },
+  {
+    "node_id": 43,
+    "label": "地点",
+    "props": {
+      "id": "雅鲁藏布大峡谷"
+    }
+  },
+  {
+    "node_id": 44,
+    "label": "地点",
+    "props": {
+      "id": "华北平原"
+    }
+  },
+  {
+    "node_id": 45,
+    "label": "地点",
+    "props": {
+      "id": "东北平原"
+    }
+  },
+  {
+    "node_id": 46,
+    "label": "地点",
+    "props": {
+      "id": "长江中下游平原"
+    }
+  },
+  {
+    "node_id": 47,
+    "label": "地点",
+    "props": {
+      "id": "黄河三角洲"
+    }
+  },
+  {
+    "node_id": 48,
+    "label": "地点",
+    "props": {
+      "id": "尼罗河三角洲"
+    }
+  },
+  {
+    "node_id": 49,
+    "label": "地点",
+    "props": {
+      "id": "崇明岛"
+    }
+  },
+  {
+    "node_id": 50,
+    "label": "地点",
+    "props": {
+      "id": "橘子洲"
+    }
+  },
+  {
+    "node_id": 51,
+    "label": "地点",
+    "props": {
+      "id": "黄土高原"
+    }
+  },
+  {
+    "node_id": 52,
+    "label": "地点",
+    "props": {
+      "id": "柴达木盆地"
+    }
+  },
+  {
+    "node_id": 53,
+    "label": "地点",
+    "props": {
+      "id": "塔克拉玛干沙漠"
+    }
+  },
+  {
+    "node_id": 54,
+    "label": "基础设施",
+    "props": {
+      "id": "青藏铁路"
+    }
+  },
+  {
+    "node_id": 55,
+    "label": "地点",
+    "props": {
+      "id": "豫东地区"
+    }
+  },
+  {
+    "node_id": 56,
+    "label": "地点",
+    "props": {
+      "id": "云南石林"
+    }
+  },
+  {
+    "node_id": 57,
+    "label": "地点",
+    "props": {
+      "id": "广西桂林"
+    }
+  },
+  {
+    "node_id": 58,
+    "label": "地点",
+    "props": {
+      "id": "重庆奉节小寨天坑"
+    }
+  },
+  {
+    "node_id": 59,
+    "label": "地点",
+    "props": {
+      "id": "四川黄龙"
+    }
+  },
+  {
+    "node_id": 60,
+    "label": "地点",
+    "props": {
+      "id": "湖南张家界黄龙洞"
+    }
+  },
+  {
+    "node_id": 61,
+    "label": "地点",
+    "props": {
+      "id": "贵州荔波"
+    }
+  },
+  {
+    "node_id": 62,
+    "label": "地点",
+    "props": {
+      "id": "澳大利亚坎贝尔港国家公园"
+    }
+  },
+  {
+    "node_id": 63,
+    "label": "地点",
+    "props": {
+      "id": "挪威西峡湾"
+    }
+  },
+  {
+    "node_id": 64,
+    "label": "概念",
+    "props": {
+      "id": "大自然"
+    }
+  },
+  {
+    "node_id": 65,
+    "label": "自然力",
+    "props": {
+      "id": "流水"
+    }
+  },
+  {
+    "node_id": 66,
+    "label": "自然力",
+    "props": {
+      "id": "风力"
+    }
+  },
+  {
+    "node_id": 67,
+    "label": "自然力",
+    "props": {
+      "id": "冰川"
+    }
+  },
+  {
+    "node_id": 68,
+    "label": "自然力",
+    "props": {
+      "id": "波浪"
+    }
+  }
+]

@@ -1,0 +1,18 @@
+# FastAPI Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+
+# Core Dependencies
+pydantic==2.5.0
+python-dotenv==1.0.0
+
+# LangChain & LLM
+langchain==0.1.0
+langchain-core==0.1.0
+langchain-community==0.0.0
+
+# Database
+neo4j==5.14.0
+
+# Additional utilities
+aiofiles==23.2.1

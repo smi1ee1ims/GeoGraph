@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>试题优化 Agent 机制解析</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; line-height: 1.8; color: #333; max-width: 900px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        h1 { color: #1a73e8; text-align: center; padding: 30px 0; border-bottom: 3px solid #1a73e8; margin-bottom: 30px; }
+        h2 { color: #333; margin: 30px 0 15px; padding-left: 10px; border-left: 4px solid #1a73e8; }
+        h3 { color: #555; margin: 20px 0 10px; }
+        p { margin: 10px 0; text-indent: 2em; }
+        .card { background: white; border-radius: 10px; padding: 20px; margin: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .highlight { background: #e8f0fe; padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .concept { background: #f0f8ff; padding: 15px; border-left: 4px solid #4169e1; margin: 10px 0; }
+        .flow { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+        .flow-step { background: white; padding: 15px 20px; border-radius: 8px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .flow-step .num { width: 35px; height: 35px; background: #1a73e8; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+        .flow-step .arrow { text-align: center; color: #888; font-size: 20px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #1a73e8; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; font-family: Consolas, monospace; color: #c7254e; }
+        pre { background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 15px 0; }
+        .diagram { background: white; padding: 30px; border-radius: 10px; text-align: center; margin: 20px 0; }
+        .component { display: inline-block; padding: 10px 20px; border-radius: 20px; margin: 5px; font-size: 14px; }
+        .llm { background: #e8f5e9; color: #2e7d32; border: 2px solid #2e7d32; }
+        .tool { background: #fff3e0; color: #e65100; border: 2px solid #e65100; }
+        .data { background: #e3f2fd; color: #1565c0; border: 2px solid #1565c0; }
+        .example { background: #fce4ec; padding: 15px; border-radius: 8px; margin: 10px 0; }
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 5px; }
+        .tag-good { background: #4caf50; color: white; }
+        .tag-bad { background: #f44336; color: white; }
+    </style>
+</head>
+<body>
+
+<h1>🔬 试题优化 Agent 机制解析</h1>
+
+<div class="card">
+    <h2>一、什么是 Agent？</h2>
+
+    <div class="concept">
+        <strong>Agent（智能体）</strong> = 一个能<strong>感知环境</strong>、<strong>做出决策</strong>、<strong>执行动作</strong>的智能程序。
+    </div>
+
+    <p>类比：就像一个<strong>智能助手</strong>，你告诉它你的目标，它会自动规划、执行、反馈。</p>
+
+    <p>在这个项目中：<br>
+    <strong>用户</strong> → 提交试题 → <strong>Agent</strong> → 评估 → 发现问题 → 优化 → 返回结果</p>
+</div>
+
+<div class="card">
+    <h2>二、Agent 的核心架构</h2>
+
+    <div class="diagram">
+        <div style="margin-bottom: 20px; font-size: 18px; color: #666;">Agent 工作流程</div>
+        <div class="component llm">用户</div>
+        <span style="color: #888;">→</span>
+        <div class="component tool">Agent Brain</div>
+        <span style="color: #888;">→</span>
+        <div class="component data">工具箱</div>
+        <span style="color: #888;">→</span>
+        <div class="component tool">执行器</div>
+        <span style="color: #888;">→</span>
+        <div class="component llm">用户</div>
+    </div>
+
+    <h3>核心组件：</h3>
+    <table>
+        <tr><th>组件</th><th>作用</th><th>类比</th></tr>
+        <tr><td><strong>LLM（大语言模型）</strong></td><td>理解意图、生成文本、推理决策</td><td>大脑</td></tr>
+        <tr><td><strong>工具（Tools）</strong></td><td>执行具体操作</td><td>手和脚</td></tr>
+        <tr><td><strong>消息管理</strong></td><td>存储上下文历史</td><td>记忆</td></tr>
+        <tr><td><strong>路由（Router）</strong></td><td>决定调用哪个工具</td><td>指挥家</td></tr>
+    </table>
+</div>
+
+<div class="card">
+    <h2>三、这个 Agent 是怎么工作的？</h2>
+
+    <div class="flow">
+        <div class="flow-step">
+            <div class="num">1</div>
+            <div>
+                <strong>用户输入</strong><br>
+                用户说一句话或提交一道试题
+            </div>
+        </div>
+        <div class="flow-step">
+            <div class="num">2</div>
+            <div>
+                <strong>意图识别（Router）</strong><br>
+                Agent 分析用户想做什么，决定调用哪个工具
+            </div>
+        </div>
+        <div class="flow-step">
+            <div class="num">3</div>
+            <div>
+                <strong>执行工具</strong><br>
+                调用对应的工具完成任务
+            </div>
+        </div>
+        <div class="flow-step">
+            <div class="num">4</div>
+            <div>
+                <strong>返回结果</strong><br>
+                把结果展示给用户
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <h2>四、工具系统（Tools）</h2>
+
+    <p>Agent 内置了 5 个工具，就像一个工具箱：</p>
+
+    <table>
+        <tr><th>工具名</th><th>功能</th><th>触发场景</th></tr>
+        <tr><td><code>submit_question</code></td><td>提交试题进行评估</td><td>用户提交新试题</td></tr>
+        <tr><td><code>optimize_question</code></td><td>优化当前试题</td><td>用户要求优化</td></tr>
+        <tr><td><code>modify_question</code></td><td>按指令修改试题</td><td>用户说"改一下..."</td></tr>
+        <tr><td><code>show_status</code></td><td>查看当前状态</td><td>用户想看试题状态</td></tr>
+        <tr><td><code>chat</code></td><td>聊天问答</td><td>用户问问题</td></tr>
+    </table>
+
+    <div class="highlight">
+        <strong>怎么决定用哪个工具？</strong><br>
+        <pre>用户: "帮我优化这道题"
+↓
+Router 分析意图 → 这是在要求优化
+↓
+选择工具: <code>optimize_question</code></pre>
+    </div>
+</div>
+
+<div class="card">
+    <h2>五、评估器机制（3个指标）</h2>
+
+    <p>每道试题会从 <strong>3 个维度</strong> 评估质量：</p>
+
+    <table>
+        <tr><th>指标</th><th>含义</th><th>如何计算</th><th>阈值</th></tr>
+        <tr><td><strong>relevance（相关性）</strong></td><td>试题和知识上下文是否相关</td><td>语义嵌入 + 余弦相似度</td><td>>= 0.70</td></tr>
+        <tr><td><strong>explainability（可解释性）</strong></td><td>答案是否唯一确定</td><td>LLM 多次回答，看一致性</td><td>>= 0.90</td></tr>
+        <tr><td><strong>difficulty（难度）</strong></td><td>难度是否符合目标</td><td>与题库同难度试题相似度</td><td>>= 0.50</td></tr>
+    </table>
+
+    <div class="concept">
+        <strong>并行评估：</strong>3 个指标同时评估，不是一个一个来，速度更快！
+    </div>
+
+    <div class="example">
+        <strong>示例：</strong><br>
+        一道题评估结果：<br>
+        - relevance: <span class="tag tag-good">0.709 ✅</span><br>
+        - explainability: <span class="tag tag-good">1.000 ✅</span><br>
+        - difficulty: <span class="tag tag-good">0.500 ✅</span><br>
+        平均分: 0.736 → 全部通过！
+    </div>
+</div>
+
+<div class="card">
+    <h2>六、优化流程（迭代循环）</h2>
+
+    <pre style="font-family: Consolas, monospace;">
+┌─────────────────────────────────────────┐
+│           迭代优化循环                    │
+│                                         │
+│  Q0 (初始试题)                           │
+│      ↓                                  │
+│  ┌──────────────────────┐               │
+│  │   并行评估 (3指标)    │               │
+│  └──────────────────────┘               │
+│      ↓                                  │
+│  全部通过? ──是──→ 返回最佳试题           │
+│      ↓                                  │
+│   失败 N 个?                             │
+│      ↓                                  │
+│  N>=2 → 多目标优化                       │
+│  N=1  → 单目标优化                       │
+│      ↓                                  │
+│  Q1 (优化后试题) ──→ 重新评估            │
+│      ↓                                  │
+│  最大 3 次迭代                           │
+└─────────────────────────────────────────┘
+    </pre>
+
+    <div class="highlight">
+        <strong>关键点：</strong>
+        <ul style="margin-left: 20px;">
+            <li>最多迭代 3 次，防止无限循环</li>
+            <li>记录每次迭代的最佳结果</li>
+            <li>如果无法全部通过，返回历史最佳</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card">
+    <h2>七、意图识别（Router）原理</h2>
+
+    <p>这是 Agent 的"大脑"，决定下一步做什么：</p>
+
+    <pre>
+用户输入: "丰富一下这道题的描述"
+
+↓
+构建决策 Prompt:
+  - 列出可用工具
+  - 告诉 LLM 当前状态
+  - 让 LLM 判断意图
+
+↓
+LLM 推理:
+  "用户想要修改试题内容" → <code>modify_question</code>
+
+↓
+返回决策结果:
+  {"tool": "modify_question", "args": {"instruction": "丰富描述"}}
+    </pre>
+
+    <div class="concept">
+        <strong>本质：</strong>用 LLM 本身来做决策！让它自己决定该怎么做。
+    </div>
+</div>
+
+<div class="card">
+    <h2>八、持续对话机制</h2>
+
+    <p>不像简单的 Q&A，这个 Agent 可以<strong>记住上下文</strong>：</p>
+
+    <pre>
+用户: 提交试题 A
+Agent: 评估完成，3个指标全通过
+
+用户: "把难度改成困难"
+Agent: 调用 modify_question，调整难度
+
+用户: "再优化一下"
+Agent: 调用 optimize_question，重新评估
+
+... 可以一直对话下去
+    </pre>
+
+    <div class="highlight">
+        <strong>关键设计：</strong>
+        <ul style="margin-left: 20px;">
+            <li><code>current_question</code> - 记住当前试题</li>
+            <li><code>conversation_history</code> - 记住对话历史</li>
+            <li>每次对话都知道上下文</li>
+        </ul>
+    </div>
+</div>
+
+<div class="card">
+    <h2>九、完整调用示例</h2>
+
+    <pre>
+用户: 帮我优化试题：题干;选项;答案;上下文;章节;难度;知识点
+          ↓
+Router 分析 → {"tool": "submit_question", "args": {...}}
+          ↓
+execute_tool("submit_question", ...) 被调用
+          ↓
+QuestionOptimizer.optimize() 执行评估
+          ↓
+评估结果:
+  - relevance: 0.709 ✅
+  - explainability: 1.000 ✅
+  - difficulty: 0.500 ✅
+          ↓
+返回完整试题给用户 ✓
+    </pre>
+</div>
+
+<div class="card">
+    <h2>十、总结：Agent 的三大能力</h2>
+
+    <table>
+        <tr><th>能力</th><th>实现方式</th><th>在这个项目中的体现</th></tr>
+        <tr><td><strong>规划（Planning）</strong></td><td>LLM 推理决定下一步</td><td>Router 分析意图选择工具</td></tr>
+        <tr><td><strong>工具调用（Tool Use）</strong></td><td>调用外部函数执行动作</td><td>评估、优化、修改工具</td></tr>
+        <tr><td><strong>记忆（Memory）</strong></td><td>保存上下文状态</td><td>current_question + history</td></tr>
+    </table>
+
+    <div class="highlight" style="background: #e8f5e9;">
+        <strong>🎉 学习要点：</strong><br>
+        Agent = LLM + Tools + Memory<br>
+        通过prompt工程让 LLM 学会调用工具，<br>
+        通过状态管理实现持续对话。
+    </div>
+</div>
+
+<div style="text-align: center; margin: 40px 0; color: #888;">
+    <p>Question Optimization Agent - 学习笔记</p>
+    <p>基于 Anthropic Tool Use 框架</p>
+</div>
+
+</body>
+</html>

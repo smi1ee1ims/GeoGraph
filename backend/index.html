@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个性化试题生成系统</title>
+
+    <!-- jQuery 是 Select2 的依赖（必须） -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Select2 的 CSS 和 JS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SimSun',-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', ,sans-serif;
+            background: linear-gradient(135deg, #ececec 0%, #c9e9c5 100%);
+            min-height: 100vh;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 340px 1fr 6px 420px;
+            grid-template-rows: 36px 1fr;
+            gap: 6px;
+            align-items: stretch;
+            height: 100vh;
+            padding: 10px;
+            overflow: hidden;
+        }
+
+        .container.agent-collapsed {
+            grid-template-columns: 340px 1fr 0px 0px;
+        }
+
+        /* 可拖动分隔条 */
+        .resize-handle {
+            width: 6px;
+            cursor: col-resize;
+            background: transparent;
+            position: relative;
+            flex-shrink: 0;
+            display: block;
+        }
+
+        .resize-handle:hover,
+        .resize-handle.dragging {
+            background: rgba(5, 111, 18, 0.3);
+            border-radius: 3px;
+        }
+
+        .resize-handle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 40px;
+            background: #ccc;
+            border-radius: 2px;
+        }
+
+        .resize-handle:hover::after,
+        .resize-handle.dragging::after {
+            background: #056f12;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px 0 10px;
+            height: 36px;
+            line-height: 36px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .header-logo {
+            width: 25px;
+            height: 25px;
+        }
+
+        .header-title {
+            font-size: 1rem;
+            font-weight: bold;
+            color: rgb(1, 111, 52);
+            margin: 0;
+        }
+
+        .header-right {
+            font-size: 0.75rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* 左侧面板 - 选项卡片 */
+        .options-panel {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            height: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #116a03;
+            margin-bottom: 8px;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 8px 16px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: #f9f9f9;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-group select:hover {
+            border-color: #007330;
+            background: #e5f4eb;
+        }
+
+        .form-group select:focus {
+            outline: none;
+            border-color: #008b3a;
+            background: #feffff;
+            box-shadow: 0 0 0 3px rgba(0, 139, 58, 0.15);
+        }
+
+        .form-group select option:hover {
+            background: #c9e9d6;
+            color: #006b09;
+        }
+
+        .form-group select option:checked {
+            background: #c9e9d6;
+            color: #006b09;
+        }
+
+        .btn-generate {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #056f12 0%, #076f34 100%);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(101, 214, 127, 0.4);
+        }
+
+        .btn-generate:active {
+            transform: translateY(0);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-generate.loading {
+            position: relative;
+        }
+
+        .btn-generate.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        @keyframes spin {
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .status-bar {
+            background: #e8f5e9;
+            border-radius: 6px;
+            padding: 5px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+        }
+
+        .status-dot.error {
+            background: #f44336;
+        }
+
+        .status-text {
+            color: #2e7d32;
+            font-size: 0.9rem;
+        }
+
+        /* 选项框样式 */
+        .option-box-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .option-box {
+            flex: 1;
+            min-width: 80px;
+            padding: 8px 8px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: #f9f9f9;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.1s;
+            font-size: 0.95rem;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .option-box:hover {
+            border-color: #007330;
+            color: #007330;
+        }
+
+        .option-box.selected {
+            background: #e5f4eb;
+            border-color: #008b3a;
+            color: #00952f;
+            font-weight: 700;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 右侧面板 - 试题卡片区域 */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Agent 面板 - 右侧栏 */
+        .agent-panel {
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .agent-panel.collapsed {
+            width: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        .agent-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 200;
+            padding: 0;
+        }
+
+        .agent-toggle:hover {
+            background: #f5f5f5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        /* 试题显示卡片 */
+        .result-card {
+            background: white;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            height: 100%;
+        }
+
+        .result-card.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .result-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #006b09;
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 4px 6px 6px 6px;
+            font-size: 0.85rem;
+            background: #f0f0f0;
+            color: #666;
+            border-radius: 5px;
+        }
+
+        .tag.primary {
+            background: #c9e9d6;
+            color: #00952f;
+        }
+
+        .question-text {
+            background: #f9f9f9;
+            border-radius: 6px 6px 0 0;
+            padding: 20px;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            font-family: 'SimSun', sans-serif;
+            font-weight:700;
+        }
+
+        .divider {
+            height: 1.5px;
+            background: linear-gradient(to right, #ccc, #999, #ccc);
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .options-text {
+            background: #f9f9f9;
+            border-radius: 0 0 6px 6px;
+            padding: 20px;
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+            font-family: 'SimSun', sans-serif;
+            font-weight:700;
+        }
+
+        .btn-answer {
+            margin-top: 8px;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            color: #0a8c1b;
+            background: rgb(248, 248, 248);
+            border: 2px solid #047849;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-answer:hover {
+            background: #027d2d;
+            color: white;
+        }
+
+        .answer-content {
+            margin-top: 5px;
+            padding: 5px;
+            font-size: 0.95rem;
+            background: #ffffff00;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #488d54;
+            font-family: 'SimSun', sans-serif;
+        }
+
+        /* Agent 优化面板 */
+        .optimizer-card {
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+
+        .optimizer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #056f12 0%, #076f34 100%);
+            color: white;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .optimizer-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .send-btn {
+            flex-shrink: 0;
+            padding: 10px 16px !important;
+            font-size: 1.1rem !important;
+        }
+
+        .optimizer-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-height: 50px;
+        }
+
+        .optimizer-shortcut-row {
+            padding: 0 15px 8px;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .shortcut-btn {
+            font-size: 0.8rem;
+            padding: 5px 12px;
+            background: linear-gradient(135deg, #056f12 0%, #076f34 100%);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shortcut-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,100,50,0.3);
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: #c9e9d6;
+            color: #006b09;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.agent {
+            align-self: flex-start;
+            background: #f0f0f0;
+            color: #333;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.system {
+            align-self: center;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-size: 0.85rem;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .message.optimized-question {
+            background: #e8f5e9;
+            border: 2px solid #008b3a;
+            color: #006b09;
+        }
+
+        .optimizer-input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px 12px 12px;
+            border-top: 1px solid #e0e0e0;
+            background: #fafafa;
+            border-radius: 0 0 6px 6px;
+            margin-top: auto;
+        }
+
+        .optimizer-input-area .input-row {
+            display: flex;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .optimizer-input-area input {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        .optimizer-input-area input:focus {
+            border-color: #008b3a;
+        }
+
+        .optimizer-input-area button {
+            padding: 10px 20px;
+            background: #056f12;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .optimizer-input-area button:hover {
+            background: #027d2d;
+        }
+
+        .optimizer-input-area button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-optimize-current {
+            margin-top: 10px;
+            padding: 10px 16px;
+            background: #056f12;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .btn-optimize-current:hover {
+            background: #027d2d;
+        }
+
+        .btn-optimize-current:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: rgb(0, 106, 41);
+            opacity: 0.7;
+            margin-top: 1px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <img src="/LOGO.png" alt="Logo" class="header-logo">
+                <h1 class="header-title">GeoAgent，你的智能出题助手</h1>
+            </div>
+            <div class="header-right">——真正懂教育，效率+++。</div>
+        </div>
+
+        <!-- 左侧选项面板 -->
+        <div class="options-panel">
+            <!-- 服务状态 -->
+            <div class="status-bar" id="statusBar">
+                <div class="status-dot" id="statusDot"></div>
+                <span class="status-text" id="statusText">检查服务状态中...</span>
+            </div>
+
+            <div class="form-group">
+                <label for="stuGroup">选择学生类别</label>
+                <select id="stuGroup">
+                    <option value="0">A类</option>
+                    <option value="1">B类</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>选择章节</label>
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.9rem; color: #666;">章</label>
+                        <select id="chapter" disabled style="background: #e0e0e0;">
+                            <option value="2">第2章</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.9rem; color: #666;">节</label>
+                        <select id="block">
+                            <option value="0">2.1 流水地貌</option>
+                            <option value="1">2.2 风成地貌</option>
+                            <option value="2">2.3 喀斯特、海岸和冰川地貌</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>选择生成方法</label>
+                <div class="option-box-group" id="methodGroup">
+                    <div class="option-box selected" data-value="0" onclick="selectMethod(this)">图检索</div>
+                    <div class="option-box" data-value="1" onclick="selectMethod(this)">向量检索</div>
+                    <div class="option-box" data-value="2" onclick="selectMethod(this)">无检索</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>选择模型</label>
+                <div class="option-box-group" id="modelGroup">
+                    <div class="option-box selected" data-value="deepseek" onclick="selectModel(this)">deepseek</div>
+                    <div class="option-box" data-value="qwen" onclick="selectModel(this)">qwen-max</div>
+                </div>
+            </div>
+
+            <button class="btn-generate" id="generateBtn" onclick="generateQuestion()">
+                出  题
+            </button>
+
+            <div class="error-message" id="errorMsg"></div>
+        </div>
+
+        <!-- 右侧面板 - 试题卡片 -->
+        <div class="right-panel">
+            <div class="card result-card show" id="resultCard">
+                <div class="result-header">
+                    <span class="result-title">出题结果</span>
+                    <div class="tags" id="resultTags"></div>
+                </div>
+                <div class="question-text" id="questionText">还没有试题，快生成试试吧</div>
+                <div class="divider" style="display: none;"></div>
+                <div class="options-text" id="optionsText" style="display: none;"></div>
+                <button class="btn-answer" id="showAnswerBtn" onclick="toggleAnswer()" style="display: none;">
+                    查看答案
+                </button>
+                <div class="answer-content" id="answerContent" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- 可拖动分隔条 -->
+        <div class="resize-handle" id="resizeHandle"></div>
+
+        <!-- Agent 优化面板 - 右侧栏 -->
+        <div class="agent-panel" id="agentPanel">
+            <div class="optimizer-header">
+                <h3>试题优化助手</h3>
+            </div>
+            <div class="optimizer-messages" id="optimizerMessages">
+            </div>
+            <div class="optimizer-shortcut-row">
+                <button class="shortcut-btn" onclick="optimizeCurrentQuestion()">✨ 优化当前试题</button>
+            </div>
+            <div class="optimizer-input-area">
+                <div class="input-row">
+                    <input type="text" id="optimizerInput" placeholder="输入..." onkeypress="handleOptimizerKeypress(event)">
+                    <button onclick="sendOptimizerMessage()" id="optimizerSendBtn" class="send-btn" title="发送">➤</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent 收起/展开按钮 -->
+        <button class="agent-toggle" id="agentToggle" onclick="toggleAgentPanel()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect x="3" y="5" width="14" height="2" rx="1" fill="#666"/>
+                <rect x="3" y="9" width="14" height="2" rx="1" fill="#666"/>
+                <rect x="3" y="13" width="14" height="2" rx="1" fill="#666"/>
+            </svg>
+        </button>
+
+        <div class="footer">
+            网页版 V1.1.3 2026.5.11
+        </div>
+    </div>
+
+    <script>
+        // 全局变量存储当前试题
+        let currentQuestionData = null;
+        let currentAnswer = '';
+
+        // 检查服务状态
+        async function checkStatus() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+
+                if (data.status === 'ok') {
+                    statusDot.classList.remove('error');
+                    statusText.textContent = '服务正常';
+                } else {
+                    statusDot.classList.add('error');
+                    statusText.textContent = '服务异常: ' + data.message;
+                }
+            } catch (e) {
+                const statusDot = document.getElementById('statusDot');
+                const statusText = document.getElementById('statusText');
+                statusDot.classList.add('error');
+                statusText.textContent = '无法连接后端服务';
+            }
+        }
+
+        // 生成试题
+        async function generateQuestion() {
+            const btn = document.getElementById('generateBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            const resultCard = document.getElementById('resultCard');
+            const resultTags = document.getElementById('resultTags');
+
+            const stuGroup = parseInt(document.getElementById('stuGroup').value);
+            const block = parseInt(document.getElementById('block').value);
+            const method = parseInt(document.querySelector('#methodGroup .selected').getAttribute('data-value'));
+
+            btn.disabled = true;
+            btn.classList.add('loading');
+            btn.textContent = '飞速思考中...';
+            errorMsg.classList.remove('show');
+
+            // 显示加载状态
+            const questionText = document.getElementById('questionText');
+            const optionsText = document.getElementById('optionsText');
+            const divider = document.querySelector('.divider');
+            questionText.textContent = '加载中...';
+            optionsText.style.display = 'none';
+            divider.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        block: block,
+                        stu_group: stuGroup,
+                        method: method
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const fullQuestion = data.question;
+                    const answerMatch = fullQuestion.match(/【参考答案】\s*([A-D])/);
+                    currentAnswer = answerMatch ? answerMatch[1] : '';
+
+                    let displayContent = fullQuestion
+                        .replace(/^【[^】]+】\s*/gm, '')
+                        .replace(/【参考答案】\s*[A-D]\s*/g, '')
+                        .replace(/\n\s*[A-D]\s*$/gm, '')
+                        .replace(/\n+$/, '')
+                        .trim();
+
+                    let questionPart = '';
+                    let optionsPart = '';
+                    if (displayContent.includes('【选项】')) {
+                        const parts = displayContent.split('【选项】');
+                        questionPart = parts[0].trim();
+                        optionsPart = parts[1] ? parts[1].trim() : '';
+                    } else {
+                        const lines = displayContent.split('\n');
+                        const optionIndex = lines.findIndex(l => /^[A-D]\./.test(l.trim()));
+                        if (optionIndex > 0) {
+                            questionPart = lines.slice(0, optionIndex).join('\n').trim();
+                            optionsPart = lines.slice(optionIndex).join('\n').trim();
+                        } else {
+                            questionPart = displayContent;
+                        }
+                    }
+
+                    document.getElementById('questionText').textContent = questionPart;
+                    document.getElementById('optionsText').textContent = optionsPart;
+
+                    // 保存完整试题数据用于优化
+                    // features: [知识点, 难度, 题型, 运算, 认知层级]
+                    currentQuestionData = {
+                        question: questionPart,
+                        options: optionsPart,
+                        answer: currentAnswer,
+                        knowledge_context: data.features[0] || '',
+                        chapter: '第2章',
+                        target_difficulty: data.features[1] || '中等',
+                        knowledge_point: data.features[0] || ''
+                    };
+
+                    document.getElementById('showAnswerBtn').textContent = '查看答案';
+                    document.getElementById('answerContent').style.display = 'none';
+
+                    const features = data.features;
+                    const tagLabels = [
+                        features[0],                    // 知识点
+                        features[1] + '难度',          // 难度 -> "简单难度"
+                        '',
+                        '运算：' + features[3],         // 运算 -> "运算：不涉及"
+                        features[4]                    // 认知层级
+                    ];
+                    resultTags.innerHTML = tagLabels.filter(v => v).map((f, i) =>
+                        `<span class="tag ${i === 0 ? 'primary' : ''}">${f}</span>`
+                    ).join('');
+
+                    // 显示选项和分隔线
+                    optionsText.style.display = 'block';
+                    divider.style.display = 'block';
+                    document.getElementById('showAnswerBtn').style.display = 'inline-block';
+                                    } else {
+                    errorMsg.textContent = '生成失败: ' + (data.detail || data.message);
+                    errorMsg.classList.add('show');
+                }
+            } catch (e) {
+                errorMsg.textContent = '请求失败: ' + e.message;
+                errorMsg.classList.add('show');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                btn.textContent = '出  题';
+            }
+        }
+
+        // 优化当前试题
+        function optimizeCurrentQuestion() {
+            if (!currentQuestionData) return;
+
+            const format = `${currentQuestionData.question};${currentQuestionData.options};${currentQuestionData.answer};${currentQuestionData.knowledge_context};${currentQuestionData.chapter};${currentQuestionData.target_difficulty};${currentQuestionData.knowledge_point}`;
+
+            document.getElementById('optimizerInput').value = format;
+            sendOptimizerMessage();
+        }
+
+        // 点击查看/隐藏答案
+        function toggleAnswer() {
+            const answerContent = document.getElementById('answerContent');
+            const showBtn = document.getElementById('showAnswerBtn');
+
+            if (answerContent.style.display === 'none') {
+                answerContent.textContent = '参考答案: ' + currentAnswer;
+                answerContent.style.display = 'block';
+                showBtn.textContent = '隐藏答案';
+            } else {
+                answerContent.style.display = 'none';
+                showBtn.textContent = '查看答案';
+            }
+        }
+
+        // 选择生成方法
+        function selectMethod(element) {
+            const group = document.getElementById('methodGroup');
+            group.querySelectorAll('.option-box').forEach(box => box.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // 选择模型
+        function selectModel(element) {
+            const group = document.getElementById('modelGroup');
+            group.querySelectorAll('.option-box').forEach(box => box.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        // ========== 可拖动分隔条 ==========
+        let isDragging = false;
+        let startX = 0;
+        let startMiddleWidth = 0;
+        let startRightWidth = 0;
+
+        document.getElementById('resizeHandle').addEventListener('mousedown', function(e) {
+            isDragging = true;
+            startX = e.clientX;
+
+            const container = document.querySelector('.container');
+            const style = window.getComputedStyle(container);
+            const cols = style.gridTemplateColumns.split(' ');
+            startMiddleWidth = parseInt(cols[1]);
+            startRightWidth = parseInt(cols[3]);
+
+            document.body.style.cursor = 'col-resize';
+            e.preventDefault();
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (!isDragging) return;
+
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+
+            // 容器右边缘（减去右padding）
+            const containerRightEdge = containerRect.right - 10;
+
+            // 分隔条当前位置的左边缘
+            const handle = document.getElementById('resizeHandle');
+            const handleLeft = handle.getBoundingClientRect().left;
+
+            // 鼠标位置
+            const mouseX = e.clientX;
+
+            // 右侧面板右边界 = 分隔条左边缘 + gap + 右侧宽度
+            // 要让右侧面板不超出，右侧宽度最大 = 容器右边缘 - 分隔条左边缘 - gap
+            const maxRightWidth = containerRightEdge - handleLeft - 10;
+
+            const delta = e.clientX - startX;
+            let middleWidth = startMiddleWidth + delta;
+            let rightWidth = startRightWidth - delta;
+
+            // 限制右侧最大宽度
+            if (rightWidth > maxRightWidth) {
+                rightWidth = maxRightWidth;
+            }
+            // 限制右侧最小宽度
+            if (rightWidth < 200) {
+                rightWidth = 200;
+                middleWidth = startMiddleWidth + startRightWidth - 200;
+            }
+            // 限制中间最小宽度
+            if (middleWidth < 100) middleWidth = 100;
+
+            container.style.gridTemplateColumns = `340px ${middleWidth}px 6px ${rightWidth}px`;
+        });
+
+        document.addEventListener('mouseup', function() {
+            isDragging = false;
+            document.body.style.cursor = '';
+        });
+
+        // 收起/展开 Agent 面板
+        function toggleAgentPanel() {
+            const panel = document.getElementById('agentPanel');
+            const toggle = document.getElementById('agentToggle');
+            const container = document.querySelector('.container');
+            const resizer = document.getElementById('resizeHandle');
+
+            if (panel.classList.contains('collapsed')) {
+                // 展开 - 恢复之前的列宽
+                panel.classList.remove('collapsed');
+                toggle.classList.remove('collapsed');
+                container.classList.remove('agent-collapsed');
+                resizer.style.display = '';
+            } else {
+                // 收起 - 隐藏右侧面板和分隔条
+                panel.classList.add('collapsed');
+                toggle.classList.add('collapsed');
+                container.classList.add('agent-collapsed');
+                resizer.style.display = 'none';
+            }
+        }
+
+        // 优化器相关函数
+        let optimizerSessionId = null;
+
+        async function initOptimizerSession() {
+            if (optimizerSessionId) return;
+
+            try {
+                const response = await fetch('/api/optimizer/init', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ provider: 'deepseek' })
+                });
+                const data = await response.json();
+                optimizerSessionId = data.session_id;
+            } catch (e) {
+                console.error('初始化优化会话失败:', e);
+            }
+        }
+
+        function handleOptimizerKeypress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendOptimizerMessage();
+            }
+        }
+
+        async function sendOptimizerMessage() {
+            const input = document.getElementById('optimizerInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            if (!optimizerSessionId) {
+                await initOptimizerSession();
+            }
+            if (!optimizerSessionId) {
+                alert('初始化优化会话失败，请刷新重试');
+                return;
+            }
+
+            const messagesDiv = document.getElementById('optimizerMessages');
+            const sendBtn = document.getElementById('optimizerSendBtn');
+
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user';
+            userMsg.textContent = message;
+            messagesDiv.appendChild(userMsg);
+
+            input.value = '';
+            sendBtn.disabled = true;
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message agent';
+            loadingDiv.textContent = '思考中...';
+            messagesDiv.appendChild(loadingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            try {
+                const response = await fetch('/api/optimizer/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: optimizerSessionId,
+                        message: message
+                    })
+                });
+
+                const data = await response.json();
+                loadingDiv.remove();
+
+                const agentMsg = document.createElement('div');
+                agentMsg.className = 'message agent';
+                agentMsg.innerHTML = formatAgentResponse(data.response || '处理完成').replace(/\n/g, '<br>');
+                messagesDiv.appendChild(agentMsg);
+
+                if (data.evaluation_history && data.evaluation_history.length > 0) {
+                    const evalMsg = document.createElement('div');
+                    evalMsg.className = 'message system';
+                    evalMsg.textContent = `迭代 ${data.evaluation_history.length} 次优化完成`;
+                    messagesDiv.appendChild(evalMsg);
+                }
+
+                if (data.best_question) {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'message system optimized-question';
+                    resultDiv.innerHTML = `<strong>优化结果：</strong><br>${data.best_question.question}<br><br><strong>选项：</strong>${data.best_question.options || ''}<br><strong>答案：</strong>${data.best_question.answer || ''}`;
+                    messagesDiv.appendChild(resultDiv);
+
+                    // 更新当前试题显示
+                    if (data.best_question.question) {
+                        document.getElementById('questionText').textContent = data.best_question.question;
+                    }
+                    if (data.best_question.options) {
+                        document.getElementById('optionsText').textContent = data.best_question.options;
+                    }
+                    if (data.best_question.answer) {
+                        currentAnswer = data.best_question.answer;
+                        document.getElementById('showAnswerBtn').textContent = '查看答案';
+                        document.getElementById('answerContent').style.display = 'none';
+                    }
+                }
+
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            } catch (e) {
+                loadingDiv.textContent = '请求失败: ' + e.message;
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        // 页面加载时检查状态并初始化优化器
+        checkStatus();
+        initOptimizerSession();
+
+        // 格式化 Agent 回复
+        function formatAgentResponse(text) {
+            if (!text) return '';
+
+            // 移除 **bold** 标记
+            text = text.replace(/\*\*(.+?)\*\*/g, '$1');
+
+            // 替换英文指标名为中文
+            const replacements = {
+                'difficulty': '难度',
+                'relevance': '相关性',
+                'explainability': '可解释性',
+                'avg': '平均分',
+                'iteration': '次修改',
+                '迭代(\\d+)': '第$1次修改',
+                '📊': '',
+                '📝': '',
+                '✅': '',
+                '❌': ''
+            };
+
+            for (const [eng, chn] of Object.entries(replacements)) {
+                if (eng.startsWith('迭代')) {
+                    text = text.replace(new RegExp(eng, 'g'), chn);
+                } else {
+                    text = text.replace(new RegExp(eng, 'gi'), chn);
+                }
+            }
+
+            // 把"最佳试题"换成"最佳版本"
+            text = text.replace(/最佳试题/g, '最佳版本');
+
+            // 清理多余空格但保留换行
+            text = text.replace(/\n{3,}/g, '\n\n');
+
+            return text;
+        }
+    </script>
+</body>
+</html>

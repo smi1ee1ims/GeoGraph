@@ -1,0 +1,337 @@
+﻿[
+  {
+    "source_id": 1,
+    "target_id": 2,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 1,
+    "target_id": 3,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 2,
+    "target_id": 4,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 5,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 6,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 7,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 8,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 9,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 10,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 11,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 12,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 3,
+    "target_id": 13,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 40,
+    "target_id": 41,
+    "rel_type": "流经"
+  },
+  {
+    "source_id": 2,
+    "target_id": 42,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 2,
+    "target_id": 43,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 3,
+    "target_id": 44,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 3,
+    "target_id": 45,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 3,
+    "target_id": 46,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 3,
+    "target_id": 47,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 3,
+    "target_id": 48,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 3,
+    "target_id": 49,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 3,
+    "target_id": 50,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 2,
+    "target_id": 14,
+    "rel_type": "导致"
+  },
+  {
+    "source_id": 2,
+    "target_id": 15,
+    "rel_type": "导致"
+  },
+  {
+    "source_id": 16,
+    "target_id": 18,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 16,
+    "target_id": 19,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 16,
+    "target_id": 20,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 16,
+    "target_id": 21,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 17,
+    "target_id": 22,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 17,
+    "target_id": 23,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 17,
+    "target_id": 24,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 16,
+    "target_id": 52,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 17,
+    "target_id": 53,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 17,
+    "target_id": 54,
+    "rel_type": "危害"
+  },
+  {
+    "source_id": 17,
+    "target_id": 55,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 25,
+    "target_id": 56,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 25,
+    "target_id": 57,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 25,
+    "target_id": 58,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 25,
+    "target_id": 59,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 25,
+    "target_id": 60,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 25,
+    "target_id": 61,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 26,
+    "target_id": 28,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 26,
+    "target_id": 29,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 28,
+    "target_id": 30,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 28,
+    "target_id": 31,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 28,
+    "target_id": 32,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 29,
+    "target_id": 33,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 26,
+    "target_id": 34,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 28,
+    "target_id": 62,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 27,
+    "target_id": 35,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 27,
+    "target_id": 36,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 27,
+    "target_id": 37,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 27,
+    "target_id": 38,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 27,
+    "target_id": 39,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 27,
+    "target_id": 63,
+    "rel_type": "形成于"
+  },
+  {
+    "source_id": 0,
+    "target_id": 1,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 0,
+    "target_id": 16,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 0,
+    "target_id": 17,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 0,
+    "target_id": 25,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 0,
+    "target_id": 26,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 0,
+    "target_id": 27,
+    "rel_type": "包含"
+  },
+  {
+    "source_id": 65,
+    "target_id": 1,
+    "rel_type": "塑造"
+  },
+  {
+    "source_id": 66,
+    "target_id": 16,
+    "rel_type": "塑造"
+  },
+  {
+    "source_id": 66,
+    "target_id": 17,
+    "rel_type": "塑造"
+  },
+  {
+    "source_id": 67,
+    "target_id": 27,
+    "rel_type": "塑造"
+  },
+  {
+    "source_id": 68,
+    "target_id": 26,
+    "rel_type": "塑造"
+  },
+  {
+    "source_id": 64,
+    "target_id": 0,
+    "rel_type": "形成"
+  }
+]
