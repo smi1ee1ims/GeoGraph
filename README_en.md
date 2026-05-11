@@ -4,7 +4,7 @@
 
 Live demo: http://47.111.172.69/
 
-For questions, feedback, or collaboration: 1345119185@qq.com
+Appreciate any chats, feedback, or collaboration: 1345119185@qq.com
 
 ### ⏫ Updates - 2026.5.11
 - Interactive agent for refining generated questions
