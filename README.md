@@ -75,6 +75,33 @@ python main.py
 
 访问 `http://localhost` 即可使用前端页面。
 
+### 【6】核心脚本使用（不依赖前端）
+
+#### graphRAG.ipynb - 试题生成
+Jupyter notebook，直接运行单元格即可生成试题，支持三种模式：
+- **图检索**：基于 Neo4j 知识图谱
+- **向量检索**：基于 FAISS 向量库
+- **无检索**：直接由 LLM 生成
+
+#### eval.ipynb - 评估器 1-3
+三个评估指标：
+- 难度评估
+- 认知层级评估
+- 知识点覆盖评估
+
+#### eval_structural_similarity.ipynb - 评估器 4
+结构相似度评估，对比生成试题与原始题库的结构相似性。
+
+#### question_optimizer_agent.py - 试题优化 Agent
+终端运行，交互式优化试题：
+
+```bash
+cd script
+python question_optimizer_agent.py
+```
+
+启动后输入试题信息（格式：题干;选项;答案;知识点;章节;难度），Agent 会进行多轮对话优化。
+
 ### License
 
 MIT License

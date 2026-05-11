@@ -77,6 +77,33 @@ python main.py
 
 Access `http://localhost` to use the frontend.
 
+### 【6】Core Scripts (without frontend)
+
+#### graphRAG.ipynb - Question Generation
+Open in Jupyter notebook and run cells directly. Supports three modes:
+- **Graph Retrieval**: Uses Neo4j knowledge graph
+- **Vector Retrieval**: Uses FAISS vector store
+- **No Retrieval**: Direct LLM generation
+
+#### eval.ipynb - Evaluators 1-3
+Three evaluation metrics:
+- Difficulty evaluation
+- Cognitive level evaluation
+- Knowledge point coverage evaluation
+
+#### eval_structural_similarity.ipynb - Evaluator 4
+Structural similarity evaluation, comparing generated questions with the original question bank.
+
+#### question_optimizer_agent.py - Question Optimizer Agent
+Run in terminal for interactive question optimization:
+
+```bash
+cd script
+python question_optimizer_agent.py
+```
+
+Input question in format: `题干;选项;答案;知识点;章节;难度`. The agent will optimize through multi-turn conversation.
+
 ### License
 
 MIT License
