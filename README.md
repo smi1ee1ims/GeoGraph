@@ -10,6 +10,8 @@
 - 🪐支持和agent交流打磨试题
 - 🪐开放了专属评估器、优化器
 - 🪐重构UI，操作更便捷
+- 
+<img width="1893" height="884" alt="image" src="https://github.com/user-attachments/assets/2e013195-2175-43a7-ab4a-8feca727e155" />
 
 ### 【1】项目简介
 嗨！GeoAgent是一个基于多路RAG的**个性化**地理试题助手，两大亮点：
@@ -18,7 +20,7 @@
 
 2.**个性化定制**：可根据学生群体特征自适应调整试题难度和认知层级。
 <!-- <img width="1379" height="510" alt="image" src="https://github.com/user-attachments/assets/1e7fcf35-66eb-4093-a050-252afc5fca02" /> -->
-<img width="1893" height="884" alt="image" src="https://github.com/user-attachments/assets/2e013195-2175-43a7-ab4a-8feca727e155" />
+
 
 接入deepseek-chat-V3.2 & qwen-max供选择
 
