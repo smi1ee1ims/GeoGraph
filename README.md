@@ -81,7 +81,7 @@ QWEN_KEY=你的key
 ```bash
 python build_vectorstore.py
 ```
-# 4. 启动服务
+4. 启动服务
 ```bash
 python main.py
 ```
